@@ -19,7 +19,9 @@
 
 // Response headers
 #define HTTP_200 "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n"
+#define HTTP_404 "HTTP/1.1 404 NOT FOUND\r\n\r\n"
 
+int make_server_socket(int port);
 int handle_call(int sock_fd);
 
 #endif // WEBSERVER_H

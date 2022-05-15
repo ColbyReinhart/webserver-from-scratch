@@ -31,47 +31,20 @@ int main(int argc, char* argv[])
 
 	printf("Listening on port %d.\n", portnum);
 
-	// Prepare socket stuff
-	struct sockaddr_in socket_addr;						// Socket address information
-	struct hostent* host_info;							// Host information
-
-	// Ask the kernel for a socket
-	int listen_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (listen_socket == -1) errorQuit("Couldn't get socket");
-
-	// Get host information
-	bzero((void*)&socket_addr, sizeof(socket_addr));	// Clear out struct
-	host_info = gethostbyname(HOSTNAME);				// Get info about host
-	
-	// Fill in host information
-	bcopy(												// Fill host address
-		(void*)host_info->h_addr,
-		(void*)&socket_addr.sin_addr,
-		host_info->h_length
-	);
-	socket_addr.sin_port = htons(portnum);				// Fill in port
-	socket_addr.sin_family = AF_INET;					// Use IPV4
-
-	// Bind address to socket
-	if (bind(listen_socket, (struct sockaddr*)&socket_addr, sizeof(socket_addr)) != 0)
-	{
-		errorQuit("Could not bind socket");
-	}
-
-	// Allow incoming calls
-	if (listen(listen_socket, QSIZE) == -1) errorQuit("Could not listen for calls");
+	// PREPARE SERVER SOCKET
+	int listen_socket = make_server_socket(portnum);
 
 	// Accept incoming call
 	printf("Waiting for new calls . . .\n");
 	while(1)
 	{
-		int comm_socket = accept(listen_socket, NULL, NULL);
-		if (comm_socket == -1) errorQuit("Couldn't accept a socket call");
-		if (handle_call(comm_socket) == -1)
+		int client_connection = accept(listen_socket, NULL, NULL);
+		if (client_connection == -1) errorQuit("Couldn't accept a socket call");
+		if (handle_call(client_connection) == -1)
 		{
-			close(comm_socket);
+			close(client_connection);
 			exit(1);
 		}
-		close(comm_socket);
+		close(client_connection);
 	}
 }
