@@ -37,7 +37,7 @@ int handle_call(int sock_fd)
 	}
 
 	// Send over html
-	FILE* html = fopen("sites/hello.html", "r");
+	FILE* html = fopen("../sites/hello.html", "r");
 	char buffer[BUFSIZ];
 	bytes_read = 0;
 	do
