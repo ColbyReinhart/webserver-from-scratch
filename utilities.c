@@ -33,6 +33,10 @@ int make_server_socket(int port)
 	socket_addr.sin_port = htons(port);					// Fill in port
 	socket_addr.sin_family = AF_INET;					// Use IPV4
 
+	// Allow the socket to be immediately reused after closing
+	const int opt = 1;
+	setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
 	// Bind address to socket
 	if (bind(listen_socket, (struct sockaddr*)&socket_addr, sizeof(socket_addr)) == -1)
 	{
