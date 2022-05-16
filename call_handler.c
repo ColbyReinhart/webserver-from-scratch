@@ -4,20 +4,46 @@
 
 #include "webserver.h"
 
-char request[MAX_REQ_LENGTH];
+// Response headers
+struct responseEntry
+{
+	int code;
+	char* message;
+};
+const struct responseEntry http_200 = {200, "OK"};
+const struct responseEntry http_404 = {404, "Not Found"};
+const struct responseEntry http_501 = {501, "Not Implemented"};
 
-// A structure to define a list of route entries in tabular form
+// Content Types
+struct contentTypeEntry
+{
+	char* extension;
+	char* type;
+};
+struct contentTypeEntry contentTypes[] =
+{
+	"html"	, 	"text/html",
+	"css"	,	"text/css",
+	"js"	,	"text/javascript",
+	NULL	,	NULL
+};
+
+// Route table entries in tabular form
 struct routeEntry
 {
 	char* path;
 	char* route;
 };
-
 struct routeEntry routeTable[] =
 {
 	"/"		,	"index.html",
 	NULL	,	NULL
 };
+
+// Other declarations
+char request[MAX_REQ_LENGTH];
+int sendServerError(int sock_fd);
+int sendResponse(int sock_fd, struct responseEntry response, char* requestedFile);
 
 int handle_call(int sock_fd)
 {
@@ -34,7 +60,7 @@ int handle_call(int sock_fd)
 	char* requestType = strtok(request, " \r\n");
 	char* requestPath = strtok(NULL, " \r\n");
 
-	printf("%s request at %s\n", requestType, requestPath);///
+	printf("%s request at %s\n", requestType, requestPath);
 
 	// What kind of request is this?
 	if (strcmp(requestType, "GET") != 0)
@@ -46,7 +72,7 @@ int handle_call(int sock_fd)
 	// Check routing table
 	int validRoute = 0;
 	char* responseRoute;
-	for (int i = 0; routeTable[i].path != NULL; ++i)
+	for (int i = 0; routeTable[i].path; ++i)
 	{
 		if (strcmp(requestPath, routeTable[i].path) == 0)
 		{
@@ -57,35 +83,106 @@ int handle_call(int sock_fd)
 	
 	if (validRoute)
 	{
-		// Send back success header
-		if (write(sock_fd, HTTP_200, strlen(HTTP_200)) == -1)
+		if (sendResponse(sock_fd, http_200, responseRoute) == -1) return -1;
+	}
+	else
+	{
+		if (sendResponse(sock_fd, http_404, NULL) == -1) return -1;
+	}
+
+	return 0;
+}
+
+// Send an 500 response
+// Input: the file descriptor of the socket to send to
+// Output: 0 on success, -1 on error
+int sendServerError(int sock_fd)
+{
+	if (write(sock_fd, "HTTP/1.1 500 Internal Server Error", BUFSIZ) == -1)
+	{
+		perror("Couldn't respond to client");
+		return -1;
+	}
+	return 0;
+}
+
+// Build and send a response
+// Input: the file descriptor to send the response to, the response,
+// and the filepath of the file to send (NULL if no file to send)
+// Output: 0 on success, -1 on error
+int sendResponse(int sock_fd, struct responseEntry response, char* requestedFile)
+{
+	char responseText[BUFSIZ];
+	
+	// If the filepath is NULL, then this is an error response
+	if (requestedFile == NULL)
+	{
+		// Format response
+		sprintf
+		(
+			responseText,
+			"HTTP/1.1 %d %s\r\n\r\n",
+			response.code,
+			response.message
+		);
+
+		// Send response
+		if (write(sock_fd, responseText, strlen(responseText)) == -1)
+		{
+			perror("Couldn't respond to client");
+			return -1;
+		}
+	}
+
+	// If the filepath is something valid, then we'll send that file
+	else
+	{
+		// First we need to get the file extension to send the content type
+		char* fileExtension = strrchr(requestedFile, '.');
+		++fileExtension;
+
+		// Now set the appropriate content type
+		char* contentType = "text/plain";
+		for (int i = 0;contentTypes[i].extension; ++i)
+		{
+			if (strcmp(contentTypes[i].extension, fileExtension) == 0)
+			{
+				contentType = contentTypes[i].type;
+				break;
+			}
+		}
+
+		// Format response header
+		sprintf
+		(
+			responseText,
+			"HTTP/1.1 %d %s\r\nContent-type: %s; charset=utf-8\r\n\r\n",
+			response.code,
+			response.message,
+			contentType
+		);
+
+		// Send response header
+		if (write(sock_fd, responseText, strlen(responseText)) == -1)
 		{
 			perror("Couldn't respond to client");
 			return -1;
 		}
 
-		// Send over html
-		char* filePath;
+		// Build the path of the requested file
+		char filePath[BUFSIZ];
 		strcpy(filePath, SITES_PATH);
-		strcat(filePath, responseRoute);
+		strcat(filePath, requestedFile);
 		FILE* webpageToServe = fopen(filePath, "r");
+
+		// Read the requested file and write it to the socket
 		char buffer[BUFSIZ];
-		bytes_read = 0;
-		
+		int bytes_read = 0;
 		do
 		{
 			bytes_read = fread(buffer, 1, BUFSIZ, webpageToServe);
 			write(sock_fd, buffer, bytes_read);
 		} while(bytes_read > 0);
-	}
-	else
-	{
-		// Send back 404 error
-		if (write(sock_fd, HTTP_404, strlen(HTTP_404)) == -1)
-		{
-			perror("Couldn't respond to client");
-			return -1;
-		}
 	}
 
 	return 0;
