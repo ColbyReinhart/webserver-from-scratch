@@ -36,8 +36,11 @@ struct routeEntry
 };
 struct routeEntry routeTable[] =
 {
-	"/"		,	"index.html",
-	NULL	,	NULL
+	"/"				,	"index.html",
+	"/index.css"	,	"index.css",
+	"/index.js"		,	"index.js",
+	"/favicon.ico"	,	"favicon.ico",
+	NULL			,	NULL
 };
 
 // Other declarations
