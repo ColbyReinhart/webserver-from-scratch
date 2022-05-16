@@ -12,7 +12,6 @@
 
 // General
 #define HOSTNAME "colbyreinhart.com"
-#define TEST_PORT 8080						// Port used for testing purposes
 #define WEB_PORT 80							// Default web port
 #define QSIZE 10							// Max amount of incoming calls to queue (arbitrary)
 #define MAX_REQ_LENGTH 8192					// Maximum length for a request

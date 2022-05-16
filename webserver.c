@@ -8,31 +8,8 @@
 
 int main(int argc, char* argv[])
 {
-	int portnum;
-
-	// If the arguments are invalid
-	if (argc > 2)
-	{
-		printf("Usage: ./server -[OPTIONAL_MODE]\nt = test mode\n");
-		exit(0);
-	}
-
-	// If there's a mode flag
-	else if (argc == 2)
-	{
-		if (strcmp(argv[1], "-t") == 0) portnum = TEST_PORT;
-	}
-
-	// If there are no mode flags
-	else
-	{
-		portnum = WEB_PORT;
-	}
-
-	printf("Listening on port %d.\n", portnum);
-
 	// PREPARE SERVER SOCKET
-	int listen_socket = make_server_socket(portnum);
+	int listen_socket = make_server_socket(WEB_PORT);
 	if (listen_socket == -1) exit(1);
 
 	// Accept incoming call
