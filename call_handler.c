@@ -36,17 +36,16 @@ struct routeEntry
 };
 struct routeEntry routeTable[] =
 {
-	"/"				,	"index.html",
-	"/index.css"	,	"index.css",
-	"/index.js"		,	"index.js",
-	"/favicon.ico"	,	"favicon.ico",
-	NULL			,	NULL
+	"/"						,	"/personal-website/",
+	"/webapps/roku-remote/"	,	"/webapps/roku-remote/",
+	NULL					,	NULL
 };
 
 // Other declarations
 char request[MAX_REQ_LENGTH];
 int sendServerError(int sock_fd);
 int sendResponse(int sock_fd, struct responseEntry response, char* requestedFile);
+int getServerRoute(char* urlRoute, char* routeToFill);
 
 int handle_call(int sock_fd)
 {
@@ -63,26 +62,17 @@ int handle_call(int sock_fd)
 	char* requestType = strtok(request, " \r\n");
 	char* requestPath = strtok(NULL, " \r\n");
 
-	printf("%s request at %s\n", requestType, requestPath);
-
 	// What kind of request is this?
 	if (strcmp(requestType, "GET") != 0)
 	{
 		printf("Error: unsupported request type: %s\n", requestType);
-		return -1;
+		sendResponse(sock_fd, http_501, NULL);
+		return 0;
 	}
 
 	// Check routing table
-	int validRoute = 0;
-	char* responseRoute;
-	for (int i = 0; routeTable[i].path; ++i)
-	{
-		if (strcmp(requestPath, routeTable[i].path) == 0)
-		{
-			strcpy(responseRoute, routeTable[i].route);
-			validRoute = 1;
-		}
-	}
+	char responseRoute[BUFSIZ];
+	int validRoute = getServerRoute(requestPath, responseRoute);
 	
 	if (validRoute)
 	{
@@ -96,7 +86,43 @@ int handle_call(int sock_fd)
 	return 0;
 }
 
-// Send an 500 response
+// Convert a URL route into a server route
+// Input: the URL route to convert, the server route to fill (NULL if none)
+// Output: 1 if the url route is valid, 0 if not
+int getServerRoute(char* urlRoute, char* routeToFill)
+{
+	// First parse the url route to get the path without the last file
+	int lastSlashPos = strrchr(urlRoute, '/') - urlRoute;
+	char folder[BUFSIZ];
+	bzero(folder, BUFSIZ);
+	strncpy(folder, urlRoute, lastSlashPos + 1);
+
+	// Now see if that folder is a valid route
+	for (int i = 0; routeTable[i].path; ++i)
+	{
+		if (strcmp(folder, routeTable[i].path) == 0)
+		{
+			// Build the final path
+			strcpy(routeToFill, ROOT_PATH);
+			strcat(routeToFill, routeTable[i].route);
+			strcat(routeToFill, urlRoute + lastSlashPos + 1);
+			
+			// If there is no final file, use index.html
+			if (routeToFill[strlen(routeToFill) - 1] == '/')
+			{
+				strcat(routeToFill, "index.html");
+			}
+			printf("%s\n", routeToFill);///
+
+			// Return success
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+// Send a 500 response
 // Input: the file descriptor of the socket to send to
 // Output: 0 on success, -1 on error
 int sendServerError(int sock_fd)
@@ -172,13 +198,8 @@ int sendResponse(int sock_fd, struct responseEntry response, char* requestedFile
 			return -1;
 		}
 
-		// Build the path of the requested file
-		char filePath[BUFSIZ];
-		strcpy(filePath, SITES_PATH);
-		strcat(filePath, requestedFile);
-		FILE* webpageToServe = fopen(filePath, "r");
-
 		// Read the requested file and write it to the socket
+		FILE* webpageToServe = fopen(requestedFile, "r");
 		char buffer[BUFSIZ];
 		int bytes_read = 0;
 		do

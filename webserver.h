@@ -15,7 +15,7 @@
 #define WEB_PORT 80						// Default web port
 #define QSIZE 10						// Max amount of incoming calls to queue (arbitrary)
 #define MAX_REQ_LENGTH 8192				// Maximum length for a request
-#define SITES_PATH "/webserver/sites/"	// Filepath to the sites directory
+#define ROOT_PATH "/webserver"			// Filepath to the preferred root directory
 
 // Functions
 int make_server_socket(int port);
