@@ -91,6 +91,14 @@ int handle_call(int sock_fd)
 // Output: 1 if the url route is valid, 0 if not
 int getServerRoute(char* urlRoute, char* routeToFill)
 {
+	// If the last character isn't a slash and we're not grabbing a file, add a slash
+	if (urlRoute[strlen(urlRoute) - 1] != '/' && strrchr(urlRoute, '.') == NULL)
+	{
+		strcat(urlRoute, "/");
+	}
+
+	printf("%s\n", urlRoute);///
+
 	// First parse the url route to get the path without the last file
 	int lastSlashPos = strrchr(urlRoute, '/') - urlRoute;
 	char folder[BUFSIZ];
