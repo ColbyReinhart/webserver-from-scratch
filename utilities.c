@@ -4,6 +4,37 @@
 
 #include "webserver.h"
 
+// Setup log files
+// Returns 0 on success, -1 on error
+int logSetup()
+{
+	// First set up services.log
+	char file_path[100];
+	strcpy(file_path, LOGFILE_PATH);
+	strcat(file_path, "services.log");
+	int fd = open(file_path, O_WRONLY);
+	if (fd != 3)
+	{
+		fprintf(2, "Couldn't open log file in fd = 3.\n");
+		fprintf(2, "Make sure you call logSetup() before opening anything else!");
+		return -1;
+	}
+
+	// Now set up errors.log (redirect stderr)
+	bzero(file_path, 100);
+	strcpy(file_path, LOGFILE_PATH);
+	strcat(file_path, "errors.log");
+	fd = open(file_path, O_WRONLY);
+	int new_fd = dup2(fd, 2);
+	if (new_fd != 2)
+	{
+		perror("Couldn't open error log file");
+		return -1;
+	}
+
+	return 0;
+}
+
 // Make a server socket and return it
 // Input: the port number to tell the server to listen on
 // Output: the file descriptor of the created socket (-1 if error)
