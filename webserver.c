@@ -15,21 +15,22 @@ void child_waiter(int signum)
 int main(int argc, char* argv[])
 {
 	// Setup log files
-	if (log_setup() == -1) cleanup_and_exit(1);
+	if (log_setup() == -1) cleanup_and_exit();
 
 	// Prepare server socket
 	int listen_socket = make_server_socket(WEB_PORT);
-	if (listen_socket == -1) cleanup_and_exit(1);
+	if (listen_socket == -1) cleanup_and_exit();
 
-	// Set a handler for terminated children
+	// Setup signal handlers
 	signal(SIGCHLD, child_waiter);
+	signal(SIGINT, cleanup_and_exit);
 
 	// Accept incoming calls
 	while(1)
 	{
 		// Get a client connection
 		int client_connection = accept(listen_socket, NULL, NULL);
-		if (client_connection == -1) errorQuit("Couldn't accept a socket call");
+		if (client_connection == -1 && errno != EINTR) errorQuit("Couldn't accept a socket call");
 
 		// Tell a child to handle the call
 		if (fork() == 0)
@@ -37,6 +38,10 @@ int main(int argc, char* argv[])
 			handle_call(client_connection);
 			close(client_connection);
 			exit(0);
+		}
+		else
+		{
+			close(client_connection);
 		}
 	}
 }
