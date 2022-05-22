@@ -8,9 +8,12 @@
 
 int main(int argc, char* argv[])
 {
+	// Setup log files
+	if (log_setup() == -1) cleanup_and_exit(1);
+
 	// PREPARE SERVER SOCKET
 	int listen_socket = make_server_socket(WEB_PORT);
-	if (listen_socket == -1) exit(1);
+	if (listen_socket == -1) cleanup_and_exit(1);
 
 	// Accept incoming call
 	printf("Waiting for new calls . . .\n");

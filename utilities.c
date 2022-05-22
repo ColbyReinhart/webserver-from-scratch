@@ -6,7 +6,7 @@
 
 // Setup log files
 // Returns 0 on success, -1 on error
-int logSetup()
+int log_setup()
 {
 	// First set up services.log
 	char file_path[100];
@@ -33,6 +33,15 @@ int logSetup()
 	}
 
 	return 0;
+}
+
+// Attempt a graceful exit
+// Input: the number to provide to exit()
+void cleanup_and_exit(int exit_number)
+{
+	close(ERROR_FD);
+	close(LOG_FD);
+	exit(exit_number);
 }
 
 // Make a server socket and return it

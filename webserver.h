@@ -24,5 +24,7 @@
 // Functions
 int make_server_socket(int port);
 int handle_call(int sock_fd);
+int log_setup();
+void cleanup_and_exit(int exit_number);
 
 #endif // WEBSERVER_H
