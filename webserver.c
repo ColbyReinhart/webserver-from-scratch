@@ -34,12 +34,9 @@ int main(int argc, char* argv[])
 		// Tell a child to handle the call
 		if (fork() == 0)
 		{
-			if (handle_call(client_connection) == -1)
-			{
-				close(client_connection);
-				cleanup_and_exit(1);
-			}
+			handle_call(client_connection);
 			close(client_connection);
+			exit(0);
 		}
 	}
 }
