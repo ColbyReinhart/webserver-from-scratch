@@ -15,8 +15,8 @@ int log_setup()
 	int fd = open(file_path, O_WRONLY);
 	if (fd != 3)
 	{
-		fprintf(2, "Couldn't open log file in fd = 3.\n");
-		fprintf(2, "Make sure you call logSetup() before opening anything else!");
+		printf("Couldn't open log file in fd = 3.\n");
+		printf("Make sure you call logSetup() before opening anything else!");
 		return -1;
 	}
 
