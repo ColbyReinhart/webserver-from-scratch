@@ -22,6 +22,7 @@ struct content_type_entry content_types[] =
 	"html"	, 	"text/html",
 	"css"	,	"text/css",
 	"js"	,	"text/javascript",
+	"zip"	,	"application/zip",
 	NULL	,	NULL
 };
 
@@ -34,11 +35,9 @@ struct route_entry
 struct route_entry route_table[] =
 {
 	"/"						,	serve_homepage,
+	"/downloads/"			,	serve_download,
 	NULL					,	NULL
 };
-
-// Prototypes
-void get_content_type(char* file_path, char* content_type);
 
 //
 // Definitions
