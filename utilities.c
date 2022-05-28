@@ -29,11 +29,11 @@ struct content_type_entry content_types[] =
 struct route_entry
 {
 	char* path;
-	char* route;
+	int (*servlet) (int, char*);
 };
 struct route_entry route_table[] =
 {
-	"/"						,	"/homepage/",
+	"/"						,	serve_homepage,
 	NULL					,	NULL
 };
 
@@ -190,7 +190,7 @@ void get_content_type(char* file_path, char* content_type)
 // Input: the requested route and a char* to fill with the result
 // (empty string if no route found)
 // Returns 1 if a route is found, 0 if not
-int get_server_route(char* url_route, char* route_to_fill)
+int call_servlet(int sock_fd, char* url_route)
 {
 	// If the last character isn't a slash and we're not grabbing a file, add a slash
 	if (url_route[strlen(url_route) - 1] != '/' && strrchr(url_route, '.') == NULL)
@@ -216,25 +216,18 @@ int get_server_route(char* url_route, char* route_to_fill)
 	// If requested_file is empty, fill it with index.html
 	if (strlen(requested_file) == 0) strcpy(requested_file, "index.html");
 
-	// Consult the routing table to look for the folder
-	int valid_route = 0;
+	// Consult the routing table and invoke the appropriate servlet
 	for (int i = 0; route_table[i].path != NULL; ++i)
 	{
 		if (strcmp(requested_folder, route_table[i].path) == 0)
 		{
-			valid_route = 1;
-			strcpy(requested_folder, route_table[i].route);
+			route_table[i].servlet(sock_fd, requested_file);
+			return 0;
 		}
 	}
 
-	// Return the final result
-	if (valid_route)
-	{
-		strcpy(route_to_fill, ROOT_PATH);			// Root path
-		strcat(route_to_fill, requested_folder);	// Folder
-		strcat(route_to_fill, requested_file);		// File
-		return 1;
-	}
+	// If we got here, then send a 404
+	send_empty_response(sock_fd, http_404);
 	
 	return 0;
 }

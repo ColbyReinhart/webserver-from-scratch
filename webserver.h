@@ -38,6 +38,15 @@ int handle_call(int sock_fd);
 int is_supported_request_type(char* request_type);
 int send_empty_response(int sock_fd, struct response_entry response);
 int send_normal_response(int sock_fd, struct response_entry response, char* file_path);
-int get_server_route(char* url_route, char* route_to_fill);
+int call_servlet(int sock_fd, char* url_route);
+
+// Response headers
+const struct response_entry http_200;
+const struct response_entry http_400;
+const struct response_entry http_404;
+const struct response_entry http_501;
+
+// Servlets
+int serve_homepage(int sock_fd, char* requested_file);
 
 #endif // WEBSERVER_H

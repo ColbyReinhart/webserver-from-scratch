@@ -51,15 +51,6 @@ int handle_call(int sock_fd)
 		return send_empty_response(sock_fd, http_400);
 	}
 
-	// Consult the routing table to get the local route
-	char local_route[200]; // arbitrary size
-	if (get_server_route(request_path, local_route))
-	{
-		printf("Routing to: %s\n", local_route);///
-		return send_normal_response(sock_fd, http_200, local_route);
-	}
-	else
-	{
-		return send_empty_response(sock_fd, http_404);
-	}
+	// Consult the routing table and call the appropriate servlet
+	call_servlet(sock_fd, request_path);
 }
