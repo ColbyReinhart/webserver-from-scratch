@@ -14,16 +14,12 @@ void child_waiter(int signum)
 
 int main(int argc, char* argv[])
 {
-	// Setup log files
-	if (log_setup() == -1) cleanup_and_exit();
-
 	// Prepare server socket
 	int listen_socket = make_server_socket(WEB_PORT);
-	if (listen_socket == -1) cleanup_and_exit();
+	if (listen_socket == -1) exit(1);
 
 	// Setup signal handlers
 	signal(SIGCHLD, child_waiter);
-	signal(SIGINT, cleanup_and_exit);
 
 	// Accept incoming calls
 	while(1)

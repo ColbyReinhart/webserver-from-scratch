@@ -35,8 +35,6 @@ struct response_entry
 // Functions
 int make_server_socket(int port);
 int handle_call(int sock_fd);
-int log_setup();
-void cleanup_and_exit();
 int is_supported_request_type(char* request_type);
 int send_empty_response(int sock_fd, struct response_entry response);
 int send_normal_response(int sock_fd, struct response_entry response, char* file_path);
