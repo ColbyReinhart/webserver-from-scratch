@@ -51,5 +51,6 @@ const struct response_entry http_501;
 // Servlets
 int serve_homepage(int sock_fd, char* requested_file);
 int serve_download(int sock_fd, char* requested_file);
+int serve_symplyfy(int sock_fd, char* requested_file);
 
 #endif // WEBSERVER_H

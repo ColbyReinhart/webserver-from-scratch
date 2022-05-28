@@ -36,6 +36,7 @@ struct route_entry route_table[] =
 {
 	"/"						,	serve_homepage,
 	"/downloads/"			,	serve_download,
+	"/symplyfy/"			,	serve_symplyfy,
 	NULL					,	NULL
 };
 
@@ -150,7 +151,7 @@ int send_normal_response(int sock_fd, struct response_entry response, char* file
 		perror("Couldn't respond to client");
 		return -1;
 	}
-
+	printf("%s\n", file_path);
 	// Read the requested file and write it to the socket
 	FILE* webpage_to_serve = fopen(file_path, "r");
 	FILE* socket = fdopen(sock_fd, "w");
