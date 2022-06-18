@@ -15,16 +15,20 @@
 #include <errno.h>
 
 // General
-#define HOSTNAME "colbyreinhart.com"
 #define WEB_PORT 80						// Default web port
 #define QSIZE 10						// Max amount of incoming calls to queue (arbitrary)
 #define MAX_REQ_LENGTH 8192				// Maximum length for a request
-#define ROOT_PATH "/webserver"			// Filepath to the preferred root directory
-#define LOGFILE_PATH "/webserver/logs/"	// Filepath to the logs folder
 #define LOG_MSG_SIZE 500				// Maximum size of a log message
 #define ERROR_FD 2						// The file descriptor for error logging (stderr)
 #define LOG_FD 3						// The file descriptor for general logging
 #define DOWNLOAD_BUFSIZ	100000			// Buffer size in bytes for downloading
+
+// Flag-dependent
+#ifndef TEST
+#define ROOT_PATH "/webserver"
+#else
+#define ROOT_PATH "/home/colbyreinhart/personal-website"
+#endif
 
 // Structures
 struct response_entry
