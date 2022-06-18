@@ -35,6 +35,9 @@ struct route_entry
 struct route_entry route_table[] =
 {
 	"/"						,	serve_homepage,
+	"/aboutme/"				,	serve_aboutme,
+	"/projects/"			,	serve_projects,
+	"/experience/"			,	serve_experience,
 	"/downloads/"			,	serve_download,
 	"/symplyfy/"			,	serve_symplyfy,
 	NULL					,	NULL
