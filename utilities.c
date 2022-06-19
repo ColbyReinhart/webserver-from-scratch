@@ -64,8 +64,12 @@ int make_server_socket(int port)
 	}
 
 	// Get host information
-	bzero((void*)&socket_addr, sizeof(socket_addr));	// Clear out struct
-	host_info = gethostbyname(HOSTNAME);				// Get info about host
+	char host[256];
+	bzero((void*)&socket_addr, sizeof(socket_addr));	// Clear out structs
+	bzero(host, 256);
+	gethostname(host, 256);
+	host_info = gethostbyname(host);					// Get info about host
+	printf("%s\n", host);///
 
 	// Fill in host information
 	bcopy(												// Fill host address
