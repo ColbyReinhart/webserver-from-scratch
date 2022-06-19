@@ -63,22 +63,10 @@ int make_server_socket(int port)
 		return -1;
 	}
 
-	// Get host information
-	char host[256];
-	bzero((void*)&socket_addr, sizeof(socket_addr));	// Clear out structs
-	bzero(host, 256);
-	gethostname(host, 256);
-	host_info = gethostbyname(host);					// Get info about host
-	printf("%s\n", host);///
-
 	// Fill in host information
-	bcopy(												// Fill host address
-		(void*)host_info->h_addr,
-		(void*)&socket_addr.sin_addr,
-		host_info->h_length
-	);
 	socket_addr.sin_port = htons(port);					// Fill in port
 	socket_addr.sin_family = AF_INET;					// Use IPV4
+	socket_addr.sin_addr.s_addr = INADDR_ANY;			// Use any available address
 
 	// Allow the socket to be immediately reused after closing
 	const int opt = 1;

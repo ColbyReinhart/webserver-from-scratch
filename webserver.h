@@ -15,7 +15,6 @@
 #include <errno.h>
 
 // General
-#define WEB_PORT 80						// Default web port
 #define QSIZE 10						// Max amount of incoming calls to queue (arbitrary)
 #define MAX_REQ_LENGTH 8192				// Maximum length for a request
 #define LOG_MSG_SIZE 500				// Maximum size of a log message
@@ -26,8 +25,10 @@
 // Flag-dependent
 #ifndef TEST
 #define ROOT_PATH "/webserver"
+#define WEB_PORT 80
 #else
 #define ROOT_PATH "/home/colbyreinhart/personal-website"
+#define WEB_PORT 8080
 #endif
 
 // Structures
