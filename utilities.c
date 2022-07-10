@@ -23,6 +23,7 @@ struct content_type_entry content_types[] =
 	"css"	,	"text/css",
 	"js"	,	"text/javascript",
 	"zip"	,	"application/zip",
+	"pdf"	,	"application/pdf",
 	NULL	,	NULL
 };
 
