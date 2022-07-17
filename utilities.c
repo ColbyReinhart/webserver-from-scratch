@@ -220,7 +220,5 @@ int call_servlet(int sock_fd, char* url_route)
 	}
 
 	// If we got here, then send a 404
-	send_empty_response(sock_fd, http_404);
-	
-	return 0;
+	return send_empty_response(sock_fd, http_404);
 }

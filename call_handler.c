@@ -53,6 +53,6 @@ int handle_call(int sock_fd)
 	// Consult the routing table and call the appropriate servlet
 	else
 	{
-		call_servlet(sock_fd, request_path);
+		return call_servlet(sock_fd, request_path);
 	}
 }
