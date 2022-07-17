@@ -11,20 +11,10 @@ const struct response_entry http_404 = {404, "Not Found"};
 const struct response_entry http_501 = {501, "Not Implemented"};
 
 // Handle a call from a client
-// Input: the file descriptor of the socket connected to the client
+// Input: the file descriptor of the client socket, the request string
 // Returns 0 on success, -1 on failure
-int handle_call(int sock_fd)
+int handle_call(int sock_fd, char* request)
 {
-	// Read in the request
-	char request[MAX_REQ_LENGTH];
-	bzero(request, MAX_REQ_LENGTH);
-	int bytes_read = read(sock_fd, request, MAX_REQ_LENGTH);
-	if (bytes_read == -1)
-	{
-		perror("Couldn't read client request");
-		return -1;
-	}
-
 	// What type of request is this?
 	char* request_type = strtok(request, " \r\n");
 	printf("%s ", request_type);///

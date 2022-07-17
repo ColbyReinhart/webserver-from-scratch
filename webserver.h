@@ -40,7 +40,7 @@ struct response_entry
 
 // Functions
 int make_server_socket(int port);
-int handle_call(int sock_fd);
+int handle_call(int sock_fd, char* request);
 int is_supported_request_type(char* request_type);
 void get_content_type(char* file_path, char* content_type);
 int send_empty_response(int sock_fd, struct response_entry response);

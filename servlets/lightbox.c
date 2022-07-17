@@ -5,15 +5,14 @@
 
 #include "../webserver.h"
 
-int lightbox_socket = -1;
+extern int lightbox_socket;
 
 int serve_lightbox(int sock_fd, char* requested_file)
 {
 	if (strcmp(requested_file, "connect.action") == 0)
 	{
-		lightbox_socket = sock_fd;
 		const char* response = "r=255 g=255 b=255\r\n";
-		write(sock_fd, response, strlen(response));
+		write(lightbox_socket, response, strlen(response));
 		return 100;
 	}
 	else if (strcmp(requested_file, "red.action") == 0)
