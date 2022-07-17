@@ -215,8 +215,7 @@ int call_servlet(int sock_fd, char* url_route)
 	{
 		if (strcmp(requested_folder, route_table[i].path) == 0)
 		{
-			route_table[i].servlet(sock_fd, requested_file);
-			return 0;
+			return route_table[i].servlet(sock_fd, requested_file);
 		}
 	}
 
