@@ -33,8 +33,11 @@ int main(int argc, char* argv[])
 		// Tell a child to handle the call
 		if (fork() == 0)
 		{
-			handle_call(client_connection);
-			close(client_connection);
+			const int code = handle_call(client_connection);
+			if (code < 100)
+			{
+				close(client_connection);
+			}
 			exit(0);
 		}
 		else
