@@ -50,13 +50,7 @@ int handle_call(int sock_fd)
 	{
 		return send_empty_response(sock_fd, http_400);
 	}
-
-	// If we're getting a CONNECT request, handle it specially
-	if (strcmp(request_type, "CONNECT") == 0)
-	{
-		call_connection_servlet(sock_fd, request);
-	}
-	// Otherwise, consult the routing table and call the appropriate servlet
+	// Consult the routing table and call the appropriate servlet
 	else
 	{
 		call_servlet(sock_fd, request_path);

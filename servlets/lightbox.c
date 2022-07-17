@@ -7,12 +7,9 @@
 
 int lightbox_socket = -1;
 
-int serve_lightbox(int sock_fd, char* request)
+int serve_lightbox(int sock_fd, char* requested_file)
 {
-	char* request_type = strtok(request, " ");
-	char* request_path = strtok(NULL, " ");
-
-	if (strcmp(request_type, "CONNECT") == 0)
+	if (strcmp(requested_file, "connect.action") == 0)
 	{
 		lightbox_socket = sock_fd;
 		const char* response = "r=255 g=0 b=0";
