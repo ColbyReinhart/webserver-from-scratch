@@ -46,6 +46,7 @@ void get_content_type(char* file_path, char* content_type);
 int send_empty_response(int sock_fd, struct response_entry response);
 int send_normal_response(int sock_fd, struct response_entry response, char* file_path);
 int call_servlet(int sock_fd, char* url_route);
+int call_connection_servlet(int sock_fd, char* request);
 
 // Response headers
 const struct response_entry http_200;
@@ -60,5 +61,8 @@ int serve_projects(int sock_fd, char* requested_file);
 int serve_experience(int sock_fd, char* requested_file);
 int serve_download(int sock_fd, char* requested_file);
 int serve_symplyfy(int sock_fd, char* requested_file);
+
+// Special servlets
+int serve_lightbox(int sock_fd, char* request);
 
 #endif // WEBSERVER_H

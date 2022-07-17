@@ -14,7 +14,8 @@ void child_waiter(int signum)
 
 int main(int argc, char* argv[])
 {
-	printf("%s\n", ROOT_PATH);///
+	printf("%s\n", ROOT_PATH);
+	
 	// Prepare server socket
 	int listen_socket = make_server_socket(WEB_PORT);
 	if (listen_socket == -1) exit(1);

@@ -9,7 +9,7 @@
 //
 
 // Supported request types
-const char* supported_request_types[] = {"GET", NULL};
+const char* supported_request_types[] = {"GET", "CONNECT", NULL};
 
 // Content Types
 struct content_type_entry
@@ -41,6 +41,10 @@ struct route_entry route_table[] =
 	"/experience/"			,	serve_experience,
 	"/downloads/"			,	serve_download,
 	"/symplyfy/"			,	serve_symplyfy,
+	NULL					,	NULL
+};
+struct route_entry connection_route_table[] = {
+	"/lightbox/"			,	serve_lightbox,
 	NULL					,	NULL
 };
 
@@ -183,9 +187,6 @@ void get_content_type(char* file_path, char* content_type)
 }
 
 // Consult the routing table to serve the appropriate webpage
-// Input: the requested route and a char* to fill with the result
-// (empty string if no route found)
-// Returns 1 if a route is found, 0 if not
 int call_servlet(int sock_fd, char* url_route)
 {
 	// If the last character isn't a slash and we're not grabbing a file, add a slash
@@ -218,6 +219,44 @@ int call_servlet(int sock_fd, char* url_route)
 		if (strcmp(requested_folder, route_table[i].path) == 0)
 		{
 			route_table[i].servlet(sock_fd, requested_file);
+			return 0;
+		}
+	}
+
+	// If we got here, then send a 404
+	send_empty_response(sock_fd, http_404);
+	
+	return 0;
+}
+
+// Consult the routing table to perform the appropriate action
+int call_connection_servlet(int sock_fd, char* request)
+{
+	const int array_size = 100; // Arbitrary
+
+	// Parse out the request path
+	strtok(request, " \r\n"); // We already know it's a CONNECT request
+	char request_path[100];
+	strcpy(request_path, strtok(NULL, " \r\n"));
+
+	// If it's trying to a get file, send back a 400
+	if (strrchr(request_path, '.') != NULL)
+	{
+		send_empty_response(sock_fd, http_400);
+	}
+
+	// If the last character isn't a slash, add a slash
+	if (request_path[strlen(request_path) - 1] != '/')
+	{
+		strcat(request_path, "/");
+	}
+
+	// Consult the routing table and invoke the appropriate servlet
+	for (int i = 0; route_table[i].path != NULL; ++i)
+	{
+		if (strcmp(request_path, route_table[i].path) == 0)
+		{
+			connection_route_table[i].servlet(sock_fd, request);
 			return 0;
 		}
 	}
