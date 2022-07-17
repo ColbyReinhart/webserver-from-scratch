@@ -9,6 +9,7 @@ extern int lightbox_socket;
 
 int serve_lightbox(int sock_fd, char* requested_file)
 {
+	printf("Lightbox servlet called\n");///
 	if (strcmp(requested_file, "connect.action") == 0)
 	{
 		const char* response = "r=255 g=255 b=255\r\n";

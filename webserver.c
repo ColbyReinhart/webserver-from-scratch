@@ -42,8 +42,12 @@ int main(int argc, char* argv[])
 			errorQuit("Couldn't read client request");
 		}
 
+		// Make a copy to inspect
+		char requestCopy[MAX_REQ_LENGTH];
+		strcpy(requestCopy, request);
+
 		// What type of request is this?
-		char* request_type = strtok(request, " ");
+		char* request_type = strtok(requestCopy, " ");
 
 		// If this is a CONNECT call, hold onto it
 		const int isConnectCall = strcmp(request_type, "CONNECT") == 0;
