@@ -41,6 +41,7 @@ struct route_entry route_table[] =
 	"/experience/"			,	serve_experience,
 	"/downloads/"			,	serve_download,
 	"/symplyfy/"			,	serve_symplyfy,
+	"/lightbox/"			,	serve_lightbox,
 	NULL					,	NULL
 };
 

@@ -60,5 +60,6 @@ int serve_projects(int sock_fd, char* requested_file);
 int serve_experience(int sock_fd, char* requested_file);
 int serve_download(int sock_fd, char* requested_file);
 int serve_symplyfy(int sock_fd, char* requested_file);
+int serve_lightbox(int sock_fd, char* requested_file);
 
 #endif // WEBSERVER_H
